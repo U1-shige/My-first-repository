@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My First Repository</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Helvetica Neue", Arial, sans-serif;
+      background: #f5f5f5;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      background: #24292e;
+      color: #fff;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    header p {
+      color: #aaa;
+      font-size: 1rem;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #0366d6;
+      padding-left: 0.75rem;
+      color: #0366d6;
+    }
+
+    .card ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .card ul li {
+      padding: 0.4rem 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .card ul li:last-child {
+      border-bottom: none;
+    }
+
+    .card ul li::before {
+      content: "✓ ";
+      color: #28a745;
+      font-weight: bold;
+    }
+
+    pre {
+      background: #f6f8fa;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.875rem;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      color: #888;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>My First Repository</h1>
+    <p>GitとGitHubを学ぶためのはじめてのリポジトリ</p>
+  </header>
+
+  <main>
+    <div class="card">
+      <h2>このプロジェクトについて</h2>
+      <p>このリポジトリは、GitとGitHubの基本的な使い方を学ぶために作成されました。バージョン管理の基礎から、コミット・ブランチ・プルリクエストまでを実践的に体験できます。</p>
+    </div>
+
+    <div class="card">
+      <h2>学べること</h2>
+      <ul>
+        <li>Gitの基本コマンドの使い方</li>
+        <li>GitHubでのコード管理</li>
+        <li>ブランチを使った開発ワークフロー</li>
+        <li>プルリクエストによるコードレビュー</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>クイックスタート</h2>
+      <pre>git clone https://github.com/u1-shige/my-first-repository.git
+cd my-first-repository
+git status</pre>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 u1-shige &mdash; MIT License</p>
+  </footer>
+
+</body>
+</html>
