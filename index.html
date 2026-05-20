@@ -92,6 +92,77 @@
       color: #888;
       font-size: 0.875rem;
     }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.25rem;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      border: 1px solid #e1e4e8;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #0366d6;
+      box-shadow: 0 0 0 3px rgba(3, 102, 214, 0.2);
+    }
+
+    .form-group input.error,
+    .form-group textarea.error {
+      border-color: #d73a49;
+      box-shadow: 0 0 0 3px rgba(215, 58, 73, 0.15);
+    }
+
+    .form-group .error-msg {
+      color: #d73a49;
+      font-size: 0.8rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+
+    .btn-submit {
+      background: #0366d6;
+      color: #fff;
+      border: none;
+      padding: 0.65rem 1.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .btn-submit:hover {
+      background: #0256c7;
+    }
+
+    .form-success {
+      color: #28a745;
+      background: #f0fff4;
+      border: 1px solid #b7ebc4;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      margin-top: 1rem;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -123,11 +194,83 @@
 cd my-first-repository
 git status</pre>
     </div>
+    <div class="card">
+      <h2>お問い合わせ</h2>
+      <form id="contactForm" novalidate>
+        <div class="form-group">
+          <label for="name">お名前 <span style="color:#d73a49">*</span></label>
+          <input type="text" id="name" placeholder="山田 太郎">
+          <p class="error-msg" id="nameError">お名前を入力してください。</p>
+        </div>
+        <div class="form-group">
+          <label for="email">メールアドレス <span style="color:#d73a49">*</span></label>
+          <input type="email" id="email" placeholder="example@email.com">
+          <p class="error-msg" id="emailError">有効なメールアドレスを入力してください。</p>
+        </div>
+        <div class="form-group">
+          <label for="message">メッセージ <span style="color:#d73a49">*</span></label>
+          <textarea id="message" rows="5" placeholder="お問い合わせ内容をご記入ください"></textarea>
+          <p class="error-msg" id="messageError">メッセージを入力してください。</p>
+        </div>
+        <button type="submit" class="btn-submit">送信する</button>
+        <div class="form-success" id="successMsg">
+          メッセージを受け付けました。ありがとうございます！
+        </div>
+      </form>
+    </div>
   </main>
 
   <footer>
     <p>&copy; 2026 u1-shige &mdash; MIT License</p>
   </footer>
 
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var valid = true;
+
+      var name = document.getElementById('name');
+      var nameError = document.getElementById('nameError');
+      if (name.value.trim() === '') {
+        name.classList.add('error');
+        nameError.style.display = 'block';
+        valid = false;
+      } else {
+        name.classList.remove('error');
+        nameError.style.display = 'none';
+      }
+
+      var email = document.getElementById('email');
+      var emailError = document.getElementById('emailError');
+      var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailPattern.test(email.value.trim())) {
+        email.classList.add('error');
+        emailError.style.display = 'block';
+        valid = false;
+      } else {
+        email.classList.remove('error');
+        emailError.style.display = 'none';
+      }
+
+      var message = document.getElementById('message');
+      var messageError = document.getElementById('messageError');
+      if (message.value.trim() === '') {
+        message.classList.add('error');
+        messageError.style.display = 'block';
+        valid = false;
+      } else {
+        message.classList.remove('error');
+        messageError.style.display = 'none';
+      }
+
+      if (valid) {
+        this.reset();
+        document.getElementById('successMsg').style.display = 'block';
+        setTimeout(function() {
+          document.getElementById('successMsg').style.display = 'none';
+        }, 5000);
+      }
+    });
+  </script>
 </body>
 </html>
