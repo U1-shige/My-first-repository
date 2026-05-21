@@ -1,4 +1,4 @@
-Whisper Notes（iPhoneアプリ）で文字起こしされたテキストから、構造化された議事録を生成してください。
+Whisper Notes（iPhoneアプリ）で文字起こしされたテキストから、議事録を生成してBoxに保存してください。
 
 ## 引数
 
@@ -15,90 +15,19 @@ Whisper Notes（iPhoneアプリ）で文字起こしされたテキストから�
 ### ステップ1：文字起こしテキストの取得
 
 **Box ファイルIDの場合**
-Box MCP ツール（`mcp__8004ad3b-98e4-41c0-9b57-a954a42597dc__get_file_content`）でテキストを取得する。
+`mcp__8004ad3b-98e4-41c0-9b57-a954a42597dc__get_file_content` でテキストを取得する。
 
 **ローカルファイルパスの場合**
 `Read` ツールでファイルを読み込む。
 
 **引数なしの場合**
-ユーザーに以下を質問して議事録データを収集する：
-1. 会議名・テーマ
-2. 開催日時（日付・開始〜終了時刻）
-3. 参加者
-4. 議題と各議題の内容
-5. 決定事項・保留事項
-6. アクションアイテム（担当者・期限）
+ユーザーに会議名・日時・参加者・議題・決定事項・アクションアイテムを質問して収集する。
 
 ---
 
-### ステップ2：議事録データの抽出
+### ステップ2：議事録テキストの生成
 
-文字起こしテキストを解析し、以下のJSONデータを構築してください：
-
-```json
-{
-  "meeting_name": "会議名（文脈から推定、不明なら「要確認」）",
-  "datetime": "日付 開始時刻〜終了時刻（不明なら今日の日付）",
-  "location": "場所またはオンラインツール名（不明なら「要確認」）",
-  "participants": "参加者一覧（不明なら「要確認」）",
-  "agenda": ["議題1", "議題2"],
-  "discussions": [
-    {
-      "topic": "議題1",
-      "summary": "議論の概要",
-      "decisions": "決定事項",
-      "pending": "保留事項（なければ空文字）"
-    }
-  ],
-  "flow_summary": "協議全体の流れの概要（2〜5文程度）"
-}
-```
-
-抽出方針：
-
-| 項目 | 抽出方針 |
-|------|---------|
-| 会議名 | 冒頭の発言や文脈から推定。不明なら `要確認` |
-| 日時 | ファイル名・本文中の日時表現から取得。不明なら今日の日付 |
-| 参加者 | 「〜さん」「〜です」等の発言者名から収集 |
-| 議題 | 「次に」「続いて」等の話題転換で区切り分類 |
-| 決定事項 | 「〜することになりました」「〜で決定」等の表現から抽出 |
-| 保留事項 | 「〜は次回」「要検討」等の表現から抽出 |
-| アクションアイテム | 「〜をお願いします」「〜までに」等から担当者・期限とセットで抽出 |
-
----
-
-### ステップ3：.docx ファイルの生成
-
-1. `python-docx` がインストールされているか確認する：
-   ```bash
-   pip show python-docx || pip install python-docx
-   ```
-
-2. JSONデータを `/tmp/minutes_data.json` に書き出す：
-   ```bash
-   cat > /tmp/minutes_data.json << 'JSONEOF'
-   （ステップ2で構築したJSONをここに記述）
-   JSONEOF
-   ```
-
-3. `create_minutes_docx.py` を実行して .docx を生成する：
-   ```bash
-   python3 /home/user/My-first-repository/create_minutes_docx.py \
-     /tmp/minutes_data.json \
-     /home/user/My-first-repository/minutes_YYYYMMDD.docx
-   ```
-   ※ `YYYYMMDD` は会議の開催日（例: `20260521`）
-
-   同名ファイルが存在する場合は `minutes_YYYYMMDD_会議名.docx` を使用する。
-
----
-
-### ステップ4：Box への保存（テキスト版）
-
-Box MCP の `upload_file` はテキストファイルのみ対応のため、議事録の**テキスト版**を Box に自動保存します。
-
-以下の形式でテキストを作成し、Box の `Claude/文字起こし` フォルダ（フォルダID: `383194890172`）にアップロードする：
+以下のフォーマット（`minutes_format.docx` の構造に準拠）で議事録テキストを作成する：
 
 ```
 議事録
@@ -122,7 +51,7 @@ Box MCP の `upload_file` はテキストファイルのみ対応のため、議
 （決定事項テキスト）
 
 保留事項：
-（保留事項テキスト）
+（保留事項があれば）
 
 ２　（議題2）
 
@@ -133,35 +62,35 @@ Box MCP の `upload_file` はテキストファイルのみ対応のため、議
 （決定事項テキスト）
 
 保留事項：
-（保留事項テキスト）
+（保留事項があれば）
 
 協議の流れ（概要）
-（flow_summaryの内容）
+（会議全体の流れを2〜5文で要約）
 ```
 
-アップロード時のファイル名: `minutes_YYYYMMDD.txt`（同名が存在する場合は `minutes_YYYYMMDD_会議名.txt`）
+抽出方針：
 
-`mcp__8004ad3b-98e4-41c0-9b57-a954a42597dc__upload_file` ツールを使用：
-- `file_name`: `minutes_YYYYMMDD.txt`
-- `file_content`: 上記テキスト
-- `parent_folder_id`: `383194890172`
+| 項目 | 抽出方針 |
+|------|---------|
+| 会議名 | 文脈から推定。不明なら `要確認` |
+| 日時 | 本文中の日時表現から取得。不明なら今日の日付 |
+| 参加者 | 発言者名から収集。不明なら `要確認` |
+| 議題 | 話題の転換点（「次に」「続いて」等）で区切り分類 |
+| 決定事項 | 「〜で決定」「〜でいきましょう」等の表現から抽出 |
+| 保留事項 | 「〜は次回」「要検討」等の表現から抽出 |
 
 ---
 
-### ステップ5：.docx を Git にコミット・プッシュ
+### ステップ3：Box に保存
 
-```bash
-git -C /home/user/My-first-repository add minutes_YYYYMMDD.docx
-git -C /home/user/My-first-repository commit -m "Add meeting minutes YYYYMMDD"
-git -C /home/user/My-first-repository push
-```
+`mcp__8004ad3b-98e4-41c0-9b57-a954a42597dc__upload_file` を使って Box に保存する：
+
+- `file_name`: `minutes_YYYYMMDD.txt`（YYYYMMDDは会議開催日。同名が存在する場合は `minutes_YYYYMMDD_会議名.txt`）
+- `file_content`: ステップ2で生成した議事録テキスト
+- `parent_folder_id`: `383194890172`（Box > Claude > 文字起こし）
 
 ---
 
-### ステップ6：完了報告
+### ステップ4：完了報告
 
-以下をユーザーに伝える：
-
-1. **Box（テキスト版）**: `Box > Claude > 文字起こし > minutes_YYYYMMDD.txt` に保存しました
-2. **Word版（.docx）**: Git リポジトリにコミット済み。GitHub から `minutes_YYYYMMDD.docx` をダウンロードできます
-3. 議事録の概要（会議名・決定事項・アクションアイテムのサマリー）
+Box に保存したファイル名とリンクをユーザーに伝える。
